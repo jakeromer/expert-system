@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Career Expert System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f2ee;
+      --surface: #ffffff;
+      --card: #fffcf9;
+      --border: #e0d9d0;
+      --accent: #c84b2f;
+      --accent2: #1a3a5c;
+      --green: #1e6b45;
+      --green-bg: #eaf5ee;
+      --red: #b93326;
+      --red-bg: #fdf0ee;
+      --text: #1a1614;
+      --muted: #7a6f68;
+      --tag-bg: #ede8e2;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 1rem 4rem;
+    }
+
+    /* ── Header ── */
+    header {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3.5rem 0 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      animation: fadeUp .6s ease both;
+    }
+    .eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    header h1 {
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.05;
+      color: var(--accent2);
+    }
+    header h1 span { color: var(--accent); }
+    header p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 480px;
+      font-weight: 400;
+      margin-top: .25rem;
+    }
+
+    /* ── Layout ── */
+    .container { max-width: 860px; margin: 0 auto; }
+
+    /* ── Step indicator ── */
+    .steps {
+      display: flex;
+      gap: 0;
+      margin-bottom: 2rem;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      animation: fadeUp .6s .1s ease both;
+    }
+    .step {
+      flex: 1;
+      padding: .75rem 1rem;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--muted);
+      background: var(--surface);
+      text-align: center;
+      letter-spacing: .03em;
+      border-right: 1px solid var(--border);
+      transition: background .3s, color .3s;
+    }
+    .step:last-child { border-right: none; }
+    .step.active { background: var(--accent2); color: #fff; }
+    .step.done { background: var(--tag-bg); color: var(--accent2); }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 1.25rem;
+      animation: fadeUp .5s ease both;
+    }
+    .card:nth-child(2) { animation-delay: .05s; }
+    .card:nth-child(3) { animation-delay: .1s; }
+    .card:nth-child(4) { animation-delay: .15s; }
+
+    .card-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      padding-bottom: .75rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Form Fields ── */
+    .field { margin-bottom: 1.25rem; }
+    .field:last-child { margin-bottom: 0; }
+    label.field-label {
+      display: block;
+      font-size: .85rem;
+      font-weight: 600;
+      color: var(--accent2);
+      margin-bottom: .45rem;
+    }
+    label.field-label .hint {
+      font-weight: 400;
+      color: var(--muted);
+      font-size: .8rem;
+      margin-left: .4rem;
+    }
+
+    select, input[type="number"], input[type="text"] {
+      width: 100%;
+      padding: .7rem 1rem;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: .95rem;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s;
+      appearance: none;
+    }
+    select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a6f68' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1rem center; padding-right: 2.5rem; }
+    select:focus, input:focus {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 3px rgba(26,58,92,.1);
+    }
+    .error-field { border-color: var(--red) !important; }
+
+    .field-error {
+      font-size: .78rem;
+      color: var(--red);
+      margin-top: .35rem;
+      display: none;
+      font-weight: 500;
+    }
+    .field-error.show { display: block; }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media(max-width: 560px){ .grid2 { grid-template-columns: 1fr; } }
+
+    /* ── Checkboxes ── */
+    .checkbox-group { display: flex; flex-direction: column; gap: .5rem; }
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .75rem;
+      padding: .75rem 1rem;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .checkbox-item:hover { border-color: var(--accent2); background: #f0eee9; }
+    .checkbox-item input[type="checkbox"] {
+      width: 17px; height: 17px;
+      accent-color: var(--accent2);
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .checkbox-item .cb-label { font-size: .9rem; font-weight: 500; line-height: 1.3; }
+    .checkbox-item .cb-sub { font-size: .78rem; color: var(--muted); margin-top: .15rem; }
+
+    /* ── Submit ── */
+    .submit-btn {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      background: var(--accent2);
+      color: #fff;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      letter-spacing: .03em;
+      transition: background .2s, transform .1s;
+      margin-top: .75rem;
+    }
+    .submit-btn:hover { background: #0f2a45; }
+    .submit-btn:active { transform: scale(.98); }
+
+    /* ── Results ── */
+    #results { display: none; }
+
+    .result-summary {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+    .chip {
+      padding: .5rem 1.25rem;
+      border-radius: 99px;
+      font-size: .85rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .chip-green { background: var(--green-bg); color: var(--green); }
+    .chip-red   { background: var(--red-bg); color: var(--red); }
+
+    .result-card {
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      border: 1.5px solid;
+      animation: fadeUp .4s ease both;
+    }
+    .result-card.qualified {
+      background: var(--green-bg);
+      border-color: rgba(30,107,69,.25);
+    }
+    .result-card.disqualified {
+      background: var(--red-bg);
+      border-color: rgba(185,51,38,.2);
+    }
+
+    .result-position {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: .5rem;
+    }
+    .result-position .icon { font-size: 1.1rem; }
+    .qualified .result-position { color: var(--green); }
+    .disqualified .result-position { color: var(--red); }
+
+    .result-status {
+      font-size: .82rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: .75rem;
+    }
+
+    .reasons { list-style: none; }
+    .reasons li {
+      font-size: .88rem;
+      color: #5a3030;
+      padding: .3rem 0 .3rem 1.4rem;
+      position: relative;
+      line-height: 1.4;
+    }
+    .reasons li::before {
+      content: '✗';
+      position: absolute;
+      left: 0;
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .section-heading {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 1.75rem 0 .75rem;
+    }
+
+    .restart-btn {
+      display: inline-block;
+      margin-top: 1.5rem;
+      padding: .75rem 1.5rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      color: var(--accent2);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: .9rem;
+      cursor: pointer;
+      transition: border-color .2s;
+    }
+    .restart-btn:hover { border-color: var(--accent2); }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .global-error {
+      background: var(--red-bg);
+      border: 1.5px solid rgba(185,51,38,.3);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.25rem;
+      font-size: .9rem;
+      color: var(--red);
+      font-weight: 600;
+      display: none;
+    }
+    .global-error.show { display: block; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">// Expert System</div>
+  <h1>Career<br><span>Qualification</span> Evaluator</h1>
+  <p>Answer each question and the system will determine which positions you qualify for and why.</p>
+</header>
+
+<div class="container">
+
+  <!-- Step Indicator -->
+  <div class="steps">
+    <div class="step active" id="step1">01 — Background</div>
+    <div class="step" id="step2">02 — Skills</div>
+    <div class="step" id="step3">03 — Results</div>
+  </div>
+
+  <!-- ── FORM ── -->
+  <div id="formSection">
+
+    <div class="global-error" id="globalError">Please fix the errors below before continuing.</div>
+
+    <!-- Card 1: Background -->
+    <div class="card">
+      <div class="card-title">01 — Education &amp; Experience</div>
+
+      <div class="grid2">
+        <div class="field">
+          <label class="field-label" for="degree">Highest Degree Earned</label>
+          <select name="degree" id="degree">
+            <option value="">Select your degree…</option>
+            <option value="High School Diploma">High School Diploma</option>
+            <option value="Associates">Associates</option>
+            <option value="Bachelors in CS">Bachelors in CS</option>
+            <option value="Bachelors Other">Bachelors (Other Field)</option>
+            <option value="Masters in CS">Masters in CS</option>
+            <option value="Masters Other">Masters (Other Field)</option>
+            <option value="PhD">PhD</option>
+          </select>
+          <div class="field-error" id="degreeErr">Please select your highest degree earned.</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="pyYears">Years of Python Development <span class="hint">(enter 0 if none)</span></label>
+          <input type="number" id="pyYears" min="0" max="50" placeholder="e.g. 3" value="0"/>
+          <div class="field-error" id="pyYearsErr">Please enter a valid number (0 or more).</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label class="field-label" for="dataYears">Years of Data Development <span class="hint">(enter 0 if none)</span></label>
+          <input type="number" id="dataYears" min="0" max="50" placeholder="e.g. 1" value="0"/>
+          <div class="field-error" id="dataYearsErr">Please enter a valid number (0 or more).</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="mgmtYears">Years Managing Software Projects <span class="hint">(enter 0 if none)</span></label>
+          <input type="number" id="mgmtYears" min="0" max="50" placeholder="e.g. 3" value="0"/>
+          <div class="field-error" id="mgmtYearsErr">Please enter a valid number (0 or more).</div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label class="field-label" for="agileYears">Years of Experience in Agile Projects <span class="hint">(enter 0 if none)</span></label>
+          <input type="number" id="agileYears" min="0" max="50" placeholder="e.g. 2" value="0"/>
+          <div class="field-error" id="agileYearsErr">Please enter a valid number (0 or more).</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="expertYears">Years Developing Expert Systems <span class="hint">(enter 0 if none)</span></label>
+          <input type="number" id="expertYears" min="0" max="50" placeholder="e.g. 2" value="0"/>
+          <div class="field-error" id="expertYearsErr">Please enter a valid number (0 or more).</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="archYears">Years in Data Architecture &amp; Data Development <span class="hint">(enter 0 if none)</span></label>
+        <input type="number" id="archYears" min="0" max="50" placeholder="e.g. 2" value="0"/>
+        <div class="field-error" id="archYearsErr">Please enter a valid number (0 or more).</div>
+      </div>
+    </div>
+
+    <!-- Card 2: Coursework & Skills -->
+    <div class="card">
+      <div class="card-title">02 — Coursework &amp; Skills</div>
+      <div class="checkbox-group">
+
+        <label class="checkbox-item">
+          <input type="checkbox" id="pythonCourse"/>
+          <div>
+            <div class="cb-label">Completed Python Coursework</div>
+            <div class="cb-sub">Formal course in Python programming</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox" id="seCourse"/>
+          <div>
+            <div class="cb-label">Completed Software Engineering Coursework</div>
+            <div class="cb-sub">Formal course in software engineering principles</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox" id="agileKnowledge"/>
+          <div>
+            <div class="cb-label">Completed an Agile Course / Has Agile Knowledge</div>
+            <div class="cb-sub">Formal Agile training or certification (desired for Entry-Level Python Engineer)</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox" id="usedGit"/>
+          <div>
+            <div class="cb-label">Has Used Git</div>
+            <div class="cb-sub">Experience with Git version control (desired for Python Engineer)</div>
+          </div>
+        </label>
+
+        <label class="checkbox-item">
+          <input type="checkbox" id="hasPMI"/>
+          <div>
+            <div class="cb-label">Has PMI Lean Project Management Certification</div>
+            <div class="cb-sub">Required qualification for Project Manager role</div>
+          </div>
+        </label>
+
+      </div>
+    </div>
+
+    <button class="submit-btn" onclick="evaluate()">Evaluate My Qualifications →</button>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <div id="results">
+    <div class="result-summary" id="summaryChips"></div>
+    <div id="qualifiedSection"></div>
+    <div id="disqualifiedSection"></div>
+    <button class="restart-btn" onclick="restart()">← Evaluate Another Applicant</button>
+  </div>
+
+</div>
+
+<script>
+  // ── Inference Rules ──────────────────────────────────────────────────────
+
+  function getInputs() {
+    return {
+      degree:        document.getElementById('degree').value,
+      pyYears:       parseInt(document.getElementById('pyYears').value) || 0,
+      dataYears:     parseInt(document.getElementById('dataYears').value) || 0,
+      mgmtYears:     parseInt(document.getElementById('mgmtYears').value) || 0,
+      agileYears:    parseInt(document.getElementById('agileYears').value) || 0,
+      expertYears:   parseInt(document.getElementById('expertYears').value) || 0,
+      archYears:     parseInt(document.getElementById('archYears').value) || 0,
+      pythonCourse:  document.getElementById('pythonCourse').checked,
+      seCourse:      document.getElementById('seCourse').checked,
+      agileKnowledge:document.getElementById('agileKnowledge').checked,
+      usedGit:       document.getElementById('usedGit').checked,
+      hasPMI:        document.getElementById('hasPMI').checked,
+    };
+  }
+
+  function hasBachelorsCS(degree) {
+    return degree === 'Bachelors in CS' || degree === 'Masters in CS' || degree === 'PhD';
+  }
+
+  function hasMastersCS(degree) {
+    return degree === 'Masters in CS' || degree === 'PhD';
+  }
+
+  // Position 1: Entry-Level Python Engineer
+  function evalEntryLevelPython(a) {
+    const fails = [];
+    // Required
+    if (!a.pythonCourse)
+      fails.push('Missing required Python coursework.');
+    if (!a.seCourse)
+      fails.push('Missing required Software Engineering coursework.');
+    if (!hasBachelorsCS(a.degree))
+      fails.push('Requires a Bachelor\'s degree in Computer Science (you selected: ' + (a.degree || 'none') + ').');
+    return { position: 'Entry-Level Python Engineer', qualified: fails.length === 0, reasons: fails,
+             bonus: a.agileKnowledge ? ['Has desired Agile course knowledge ✓'] : [] };
+  }
+
+  // Position 2: Python Engineer
+  function evalPythonEngineer(a) {
+    const fails = [];
+    if (a.pyYears < 3)
+      fails.push('Requires 3 years of Python development experience (you entered: ' + a.pyYears + ' year(s)).');
+    if (a.dataYears < 1)
+      fails.push('Requires 1 year of data development experience (you entered: ' + a.dataYears + ' year(s)).');
+    if (a.agileYears < 1)
+      fails.push('Requires experience in Agile projects — at least 1 year (you entered: ' + a.agileYears + ' year(s)).');
+    if (!hasBachelorsCS(a.degree))
+      fails.push('Requires a Bachelor\'s degree in Computer Science (you selected: ' + (a.degree || 'none') + ').');
+    return { position: 'Python Engineer', qualified: fails.length === 0, reasons: fails,
+             bonus: a.usedGit ? ['Has desired Git experience ✓'] : [] };
+  }
+
+  // Position 3: Project Manager
+  function evalProjectManager(a) {
+    const fails = [];
+    if (a.mgmtYears < 3)
+      fails.push('Requires 3 years managing software projects (you entered: ' + a.mgmtYears + ' year(s)).');
+    if (a.agileYears < 2)
+      fails.push('Requires 2 years of experience in Agile projects (you entered: ' + a.agileYears + ' year(s)).');
+    if (!a.hasPMI)
+      fails.push('Requires a PMI Lean Project Management Certification.');
+    return { position: 'Project Manager', qualified: fails.length === 0, reasons: fails, bonus: [] };
+  }
+
+  // Position 4: Senior Knowledge Engineer
+  function evalSeniorKnowledge(a) {
+    const fails = [];
+    if (a.pyYears < 4)
+      fails.push('Requires 4 years of Python development experience (you entered: ' + a.pyYears + ' year(s)).');
+    if (a.expertYears < 2)
+      fails.push('Requires 2 years of Expert Systems development experience (you entered: ' + a.expertYears + ' year(s)).');
+    if (a.archYears < 2)
+      fails.push('Requires 2 years of data architecture and data development experience (you entered: ' + a.archYears + ' year(s)).');
+    if (!hasMastersCS(a.degree))
+      fails.push('Requires a Master\'s degree in Computer Science (you selected: ' + (a.degree || 'none') + ').');
+    return { position: 'Senior Knowledge Engineer', qualified: fails.length === 0, reasons: fails, bonus: [] };
+  }
+
+  // ── Validation ────────────────────────────────────────────────────────────
+
+  function validateInputs(a) {
+    let valid = true;
+
+    function setErr(id, errId, condition, msg) {
+      const el = document.getElementById(id);
+      const err = document.getElementById(errId);
+      if (condition) {
+        el.classList.add('error-field');
+        err.textContent = msg;
+        err.classList.add('show');
+        valid = false;
+      } else {
+        el.classList.remove('error-field');
+        err.classList.remove('show');
+      }
+    }
+
+    const validDegrees = ['High School Diploma','Associates','Bachelors in CS','Bachelors Other','Masters in CS','Masters Other','PhD'];
+    setErr('degree', 'degreeErr', !validDegrees.includes(a.degree),
+      'Please select your degree from the dropdown. Do not type it manually.');
+
+    const numFields = [
+      ['pyYears','pyYearsErr'], ['dataYears','dataYearsErr'],
+      ['mgmtYears','mgmtYearsErr'], ['agileYears','agileYearsErr'],
+      ['expertYears','expertYearsErr'], ['archYears','archYearsErr']
+    ];
+    numFields.forEach(([id, errId]) => {
+      const val = document.getElementById(id).value.trim();
+      const num = parseInt(val);
+      setErr(id, errId, val === '' || isNaN(num) || num < 0 || num > 50,
+        'Please enter a whole number between 0 and 50.');
+    });
+
+    return valid;
+  }
+
+  // ── Evaluate ──────────────────────────────────────────────────────────────
+
+  function evaluate() {
+    const a = getInputs();
+    const globalErr = document.getElementById('globalError');
+
+    if (!validateInputs(a)) {
+      globalErr.classList.add('show');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    globalErr.classList.remove('show');
+
+    const results = [
+      evalEntryLevelPython(a),
+      evalPythonEngineer(a),
+      evalProjectManager(a),
+      evalSeniorKnowledge(a),
+    ];
+
+    renderResults(results);
+  }
+
+  // ── Render Results ────────────────────────────────────────────────────────
+
+  function renderResults(results) {
+    // Hide form, show results
+    document.getElementById('formSection').style.display = 'none';
+    const resDiv = document.getElementById('results');
+    resDiv.style.display = 'block';
+
+    // Update steps
+    document.getElementById('step1').className = 'step done';
+    document.getElementById('step2').className = 'step done';
+    document.getElementById('step3').className = 'step active';
+
+    const qualified   = results.filter(r => r.qualified);
+    const disqualified = results.filter(r => !r.qualified);
+
+    // Summary chips
+    document.getElementById('summaryChips').innerHTML =
+      `<span class="chip chip-green">✓ Qualified: ${qualified.length}</span>` +
+      `<span class="chip chip-red">✗ Not Qualified: ${disqualified.length}</span>`;
+
+    // Qualified section
+    let qHTML = qualified.length > 0
+      ? `<div class="section-heading">Positions you qualify for</div>`
+      : `<div class="section-heading">Positions you qualify for</div>
+         <div class="result-card disqualified"><div class="result-position"><span class="icon">✗</span>You do not qualify for any positions at this time.</div></div>`;
+
+    qualified.forEach(r => {
+      qHTML += `<div class="result-card qualified">
+        <div class="result-position"><span class="icon">✓</span>${r.position}</div>
+        <div class="result-status">You meet all required qualifications for this position.</div>
+        ${r.bonus.length ? '<ul class="reasons" style="color:var(--green)">' + r.bonus.map(b => `<li style="color:var(--green)">${b}</li>`).join('') + '</ul>' : ''}
+      </div>`;
+    });
+
+    // Disqualified section
+    let dqHTML = `<div class="section-heading">Positions you do not qualify for</div>`;
+    disqualified.forEach(r => {
+      dqHTML += `<div class="result-card disqualified">
+        <div class="result-position"><span class="icon">✗</span>${r.position}</div>
+        <div class="result-status">You did not meet the following requirement(s):</div>
+        <ul class="reasons">${r.reasons.map(reason => `<li>${reason}</li>`).join('')}</ul>
+      </div>`;
+    });
+
+    document.getElementById('qualifiedSection').innerHTML = qHTML;
+    document.getElementById('disqualifiedSection').innerHTML = dqHTML;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── Restart ───────────────────────────────────────────────────────────────
+
+  function restart() {
+    document.getElementById('formSection').style.display = 'block';
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('step1').className = 'step active';
+    document.getElementById('step2').className = 'step';
+    document.getElementById('step3').className = 'step';
+    document.getElementById('degree').value = '';
+    ['pyYears','dataYears','mgmtYears','agileYears','expertYears','archYears'].forEach(id => {
+      document.getElementById(id).value = '0';
+    });
+    ['pythonCourse','seCourse','agileKnowledge','usedGit','hasPMI'].forEach(id => {
+      document.getElementById(id).checked = false;
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
